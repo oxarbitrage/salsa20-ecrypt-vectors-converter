@@ -9,14 +9,14 @@ function usage()
 }
 
 if [ $# -lt 3 ]; then
-    usage
+	usage
     exit 1
 fi
 
 re='^[0-9]+$'
 if ! [[ $1 =~ $re ]] ; then
-   echo "Not a number"
-   exit 1
+	echo "Not a number"
+   	exit 1
 fi
 
 if [ $1 -ne 128 ] && [ $1 -ne 256 ]; then
