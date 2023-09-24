@@ -1,13 +1,17 @@
 # Converting Salsa20 ECRYPT test vectors to JSON
 
+Convert old NESSIE format ECRYPT Salsa20 test vectors to more friendly JSON files containing the same data.
+
+## Motivation
+
 The [Salsa20 spec](https://cr.yp.to/snuffle/spec.pdf) provides test vectors for different parts of the protocol but do not provide any vectors for the encryption function.
 
 The [eSTREAM project](https://www.ecrypt.eu.org/stream/) was a multi-year project to promote efficient and compact stream ciphers designs. As part of this effort the [Salsa20/12](https://www.ecrypt.eu.org/stream/e2-salsa20.html) cipher was analized and by this, a good amount of test vectors for the encryption function were created.
 
 This is an old project and we were not able to find the test vectors in the official site. The following 2 files are what i think were the official test vectors:
 
-- [salsa20-128.64-verified.test-vectors](https://github.com/das-labor/legacy/blob/master/microcontroller-2/arm-crypto-lib/testvectors/salsa20-128.64-verified.test-vectors)
-- [salsa20-256.64-verified.test-vectors](https://github.com/das-labor/legacy/blob/master/microcontroller-2/arm-crypto-lib/testvectors/salsa20-256.64-verified.test-vectors)
+- Original test vector 128 bits key file: [salsa20-128.64-verified.test-vectors](https://github.com/das-labor/legacy/blob/master/microcontroller-2/arm-crypto-lib/testvectors/salsa20-128.64-verified.test-vectors)
+- Original test vector 256 bits key file: [salsa20-256.64-verified.test-vectors](https://github.com/das-labor/legacy/blob/master/microcontroller-2/arm-crypto-lib/testvectors/salsa20-256.64-verified.test-vectors)
 
 The goal of this small project is to convert those test vectors that ([seems to be](https://crypto.stackexchange.com/questions/81087/ecrypt-salsa20-test-vectors-interpretation)) [NESSIE format](https://www.ecrypt.eu.org/stream/perf/#overview) to JSON so more modern Salsa20 implementations can use them easily.
 
@@ -19,14 +23,14 @@ Then we found a [salsa20 C implementation](https://github.com/alexwebr/salsa20) 
 
 First, the implementation trims the header and the tail of the original files and so we do. Our test vector files now are:
 
-- [test_vectors.128](https://github.com/alexwebr/salsa20/blob/master/test_vectors.128)
-- [test_vectors.256](https://github.com/alexwebr/salsa20/blob/master/test_vectors.256)
+- Trimmed test vector 128 bits key file: [test_vectors.128](https://github.com/alexwebr/salsa20/blob/master/test_vectors.128)
+- Trimmed test vector 256 bits key file: [test_vectors.256](https://github.com/alexwebr/salsa20/blob/master/test_vectors.256)
 
 We downloadeed this files and are now part of the project too: [test_vectors.128](test_vectors.128) and [test_vectors.256](test_vectors.256)
 
 It is easy to compare and see no test data was modified but just file header and tail information was removed from one version to the other:
 
-```
+```bash
 % diff salsa20-256.64-verified.test-vectors test_vectors.256
 1,12d0
 < 
@@ -73,19 +77,36 @@ The C implementaion use shell scripts for generating unit tests from the test ve
 
 We do a similar approach here but converting from the test files to JSON in [vectors_to_json.sh](vectors_to_json.sh).
 
+The purpose of trimming the original test vector files is for the shell script to don't have to do it. The script will fail if the original files are not trimmed as specified in this section.
+
 ## Usage
 
+To convert the test vectors to JSON for 128-bit keys:
+```bash
+./vectors_to_json.sh 128 test_vectors.128 test_vectors_128.json
 ```
-% ./vectors_to_json.sh 128 test_vectors.128 test_vectors_128.json
-% ./vectors_to_json.sh 256 test_vectors.256 test_vectors_256.json
+
+To convert the test vectors to JSON for 256-bit keys:
+```bash
+./vectors_to_json.sh 256 test_vectors.256 test_vectors_256.json
 ```
 
 ## New JSON tests vectors
 
 Feel free to use them in any way.
 
-- [test_vectors_128.json](test_vectors_128.json)
-- [test_vectors_256.json](test_vectors_256.json)
+- JSON test vector 128 bits key file: [test_vectors_128.json](test_vectors_128.json)
+- JSON test vector 128 bits key file: [test_vectors_256.json](test_vectors_256.json)
+
+## Where this files are being used?
+
+This test vectors are known to be used in the [Haskell Salsa20 ECRYPT unit tests](https://github.com/oxarbitrage/hsalsa20/tree/main/test/unit/ecrypt).
+
+If you find this repositoty usfeul please let us know in an issue or pull request. We will be happy to include your use case in this section.
+
+## Licence
+
+This repository is under the [MIT](LICENSE) license.
 
 ## References
 
@@ -96,3 +117,4 @@ Feel free to use them in any way.
 - ECRYPT Salsa20 Test Vectors Interpretation: https://crypto.stackexchange.com/questions/81087/ecrypt-salsa20-test-vectors-interpretation
 - NESSIE format: https://www.ecrypt.eu.org/stream/perf/#overview
 - Salsa20 C implementation: https://github.com/alexwebr/salsa20/
+- Haskell Salsa20: https://github.com/oxarbitrage/hsalsa20
